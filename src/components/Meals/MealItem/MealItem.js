@@ -1,20 +1,36 @@
+//dependencies
+import { useContext } from 'react';
 //components
 import MealItemForm from './MealItemForm';
+import CartContext from '../../../store/cart-context';
 //assets
 import classes from './MealItem.module.css';
 
 const MealItem = (props) => {
-	const priceFinal = `$${props.price.toFixed(2)}`; //rendering with decimals
+	//using cart context
+	const cartCtx = useContext(CartContext);
+
+	const price = `$${props.price.toFixed(2)}`; //rendering with decimals
+
+	//adding an item to the cart using context handler
+	const addToCartHandler = (amount) => {
+		cartCtx.addItem({
+			id: props.id,
+			name: props.name,
+			amount: amount,
+			price: props.price,
+		});
+	};
 
 	return (
 		<li className={classes.meal}>
 			<div>
 				<h3>{props.name}</h3>
 				<div className={classes.description}>{props.description}</div>
-				<div className={classes.price}>{priceFinal}</div>
+				<div className={classes.price}>{price}</div>
 			</div>
 			<div>
-				<MealItemForm id={props.id} />
+				<MealItemForm id={props.id} onAddToCart={addToCartHandler} />
 			</div>
 		</li>
 	);
