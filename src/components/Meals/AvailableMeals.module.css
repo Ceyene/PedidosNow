@@ -16,6 +16,11 @@
 	color: rgb(241, 232, 221);
 }
 
+.MealsError {
+	text-align: center;
+	color: #c94848;
+}
+
 @keyframes meals-appear {
 	from {
 		opacity: 0;

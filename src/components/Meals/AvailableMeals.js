@@ -9,6 +9,7 @@ import classes from './AvailableMeals.module.css';
 const AvailableMeals = () => {
 	const [meals, setMeals] = useState([]); //meals state
 	const [isLoading, setIsLoading] = useState(true); //loading state
+	const [httpError, setHttpError] = useState(); //error state
 
 	//fetching meals data when component is first rendered
 	useEffect(() => {
@@ -17,6 +18,12 @@ const AvailableMeals = () => {
 			const response = await fetch(
 				'https://react-practice-131ce-default-rtdb.firebaseio.com/meals.json'
 			);
+
+			//checking if there is an error before continue
+			if (!response.ok) {
+				throw new Error('Something went wrong...');
+			}
+
 			const responseData = await response.json(); //firebase will return an object, we need an array
 			const loadedMeals = [];
 			for (const key in responseData) {
@@ -30,8 +37,12 @@ const AvailableMeals = () => {
 			setMeals(loadedMeals); //saving obtained array to our meals state
 			setIsLoading(false); //done loading
 		};
-		//executing function
-		fetchMeals();
+
+		//executing and catching errors
+		fetchMeals().catch((error) => {
+			setIsLoading(false); //done loading
+			setHttpError(error.message); //setting error state with our new error message
+		});
 	}, []);
 
 	//checking if it's loading before rendering
@@ -39,6 +50,15 @@ const AvailableMeals = () => {
 		return (
 			<section className={classes.MealsLoading}>
 				<p>Loading...</p>
+			</section>
+		);
+	}
+
+	//checking if there is an error before rendering
+	if (httpError) {
+		return (
+			<section className={classes.MealsError}>
+				<p>{httpError}</p>
 			</section>
 		);
 	}
