@@ -1,5 +1,5 @@
 //dependencies
-import { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 //components
 import Modal from '../UI/Modal';
 import CartContext from '../../store/cart-context';
@@ -11,6 +11,9 @@ import classes from './Cart.module.css';
 const Cart = (props) => {
 	//checkout form state
 	const [isCheckout, setIsCheckout] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [didSubmit, setDidSubmit] = useState(false);
+	const [orderError, setOrderError] = useState(); //error state
 
 	//using cart context
 	const cartCtx = useContext(CartContext);
@@ -33,15 +36,29 @@ const Cart = (props) => {
 		setIsCheckout(true);
 	};
 	//submitting order handler
-	const submitOrderHandler = (userData) => {
-		//sending req to the backend with user and cart data
-		fetch(
-			'https://react-practice-131ce-default-rtdb.firebaseio.com/orders.json',
-			{
-				method: 'POST',
-				body: JSON.stringify({ user: userData, orderedItems: cartCtx.items }),
+	const submitOrderHandler = async (userData) => {
+		try {
+			setIsSubmitting(true); //sending order state -> user experience
+			//sending req to the backend with user and cart data
+			const response = await fetch(
+				'https://react-practice-131ce-default-rtdb.firebaseio.com/orders.json',
+				{
+					method: 'POST',
+					body: JSON.stringify({ user: userData, orderedItems: cartCtx.items }),
+				}
+			);
+			//checking if there is an error before continue
+			if (!response.ok) {
+				throw new Error(
+					'Something went wrong with the order. Please, try again...'
+				);
 			}
-		);
+			setIsSubmitting(false); //done submitting
+			setDidSubmit(true); //confirmed order
+		} catch (error) {
+			setIsSubmitting(false); //done submitting
+			setOrderError(error.message); //setting error message
+		}
 	};
 
 	const cartItems = (
@@ -72,8 +89,8 @@ const Cart = (props) => {
 		</div>
 	);
 
-	return (
-		<Modal onCloseCart={props.onCloseCart}>
+	const cartModalContent = (
+		<React.Fragment>
 			{cartItems}
 			<div className={classes.total}>
 				<span>Total Amount</span>
@@ -83,6 +100,34 @@ const Cart = (props) => {
 				<Checkout onConfirm={submitOrderHandler} onCancel={props.onCloseCart} />
 			)}
 			{!isCheckout && modalActions}
+		</React.Fragment>
+	);
+
+	//messages for different stages of the order -> user experience
+	const isSubmittingModalContent = <p>Sending order data...</p>;
+	const didSubmitModalContent = (
+		<React.Fragment>
+			<p>Successfully sent the order!</p>
+			<button type="button" onClick={props.onCloseCart}>
+				Close
+			</button>
+		</React.Fragment>
+	);
+	const orderErrorModalContent = (
+		<React.Fragment>
+			<p>{orderError}</p>
+			<button type="button" onClick={props.onCloseCart}>
+				Close
+			</button>
+		</React.Fragment>
+	);
+
+	return (
+		<Modal onCloseCart={props.onCloseCart}>
+			{!isSubmitting && !didSubmit && !orderError && cartModalContent}
+			{isSubmitting && isSubmittingModalContent}
+			{didSubmit && didSubmitModalContent}
+			{orderError && orderErrorModalContent}
 		</Modal>
 	);
 };
