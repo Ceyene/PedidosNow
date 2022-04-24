@@ -7,8 +7,8 @@ import MealItem from './MealItem/MealItem';
 import classes from './AvailableMeals.module.css';
 
 const AvailableMeals = () => {
-	//meals state
-	const [meals, setMeals] = useState([]);
+	const [meals, setMeals] = useState([]); //meals state
+	const [isLoading, setIsLoading] = useState(true); //loading state
 
 	//fetching meals data when component is first rendered
 	useEffect(() => {
@@ -28,10 +28,20 @@ const AvailableMeals = () => {
 				});
 			}
 			setMeals(loadedMeals); //saving obtained array to our meals state
+			setIsLoading(false); //done loading
 		};
 		//executing function
 		fetchMeals();
 	}, []);
+
+	//checking if it's loading before rendering
+	if (isLoading) {
+		return (
+			<section className={classes.MealsLoading}>
+				<p>Loading...</p>
+			</section>
+		);
+	}
 
 	const mealsList = meals.map((meal) => (
 		<MealItem
