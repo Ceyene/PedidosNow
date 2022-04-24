@@ -54,6 +54,12 @@ const Checkout = (props) => {
 			return;
 		}
 		//else, if valid, submit cart data
+		props.onConfirm({
+			name: enteredName,
+			street: enteredStreet,
+			city: enteredCity,
+			postalCode: enteredPostal,
+		});
 	};
 
 	//dynamic CSS classes for error handling
