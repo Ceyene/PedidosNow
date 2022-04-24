@@ -55,6 +55,7 @@ const Cart = (props) => {
 			}
 			setIsSubmitting(false); //done submitting
 			setDidSubmit(true); //confirmed order
+			cartCtx.clearCart(); //clear cart once submitted
 		} catch (error) {
 			setIsSubmitting(false); //done submitting
 			setOrderError(error.message); //setting error message
