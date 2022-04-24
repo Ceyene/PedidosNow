@@ -1,7 +1,7 @@
 .form {
 	margin: 1rem 0;
 	height: 19rem;
-	overflow: auto;
+	overflow: scroll;
 }
 
 .control {
@@ -30,7 +30,7 @@
 
 .actions button {
 	font: inherit;
-	color: #5a1a01;
+	color: #c94848;
 	cursor: pointer;
 	background-color: transparent;
 	border: none;
@@ -44,8 +44,8 @@
 }
 
 .actions .submit {
-	border: 1px solid #5a1a01;
-	background-color: #5a1a01;
+	border: 1px solid #c94848;
+	background-color: #c94848;
 	color: white;
 }
 
